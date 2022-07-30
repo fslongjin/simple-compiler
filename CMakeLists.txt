@@ -3,6 +3,7 @@ project(simple_compiler)
 
 set(CMAKE_CXX_STANDARD 14)
 add_subdirectory(lex)
+add_subdirectory(parser)
 
 aux_source_directory(. DIR_SRCS)
 add_executable(simple_compiler ${DIR_SRCS})
