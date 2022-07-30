@@ -6,7 +6,8 @@
 
 namespace lex
 {
-	int lexer::get_token()
+
+	Token Lexer::get_token()
 	{
 		int last_char = getchar();
 		std::string identifier_str;
@@ -23,17 +24,17 @@ namespace lex
 				identifier_str += std::to_string(last_char);
 
 			if (identifier_str == "def")
-				return tok_def;
+				return Token(tok_def, 0);
 			if (identifier_str == "extern")
-				return tok_extern;
+				return Token(tok_extern, 0);
 
-			return tok_identifier;
+			return Token(tok_identifier, 0);
 		}
 
 		// 第一个为数字
 		if (std::isdigit(last_char) || last_char == '.')
 		{
-			std::string num_str = "";
+			std::string num_str;
 			do
 			{
 				num_str += std::to_string(last_char);
@@ -41,7 +42,7 @@ namespace lex
 			} while (isdigit(last_char) || last_char == '.');
 
 			numVal = strtod(num_str.c_str(), nullptr);
-			return tok_number;
+			return Token(tok_number, numVal);
 		}
 
 		// 忽略注释
@@ -58,9 +59,25 @@ namespace lex
 
 		// 检查是否到达了文件的结尾
 		if (last_char == EOF)
-			return tok_eof;
+			return Token(tok_eof, 0);
 
 		// 其他情况的话，不符合我们的解析条件，直接返回
-		return (int)last_char;
+		return Token(last_char, 0);
+	}
+	bool Token::operator==(const Token& p) const
+	{
+		return this->get_numVal() == p.get_numVal() && this->get_token() == p.get_token();
+	}
+	bool Token::operator!=(const Token& p) const
+	{
+		return !((*this) == p);
+	}
+	void Token::set_str(const std::string& s)
+	{
+		this->str = s;
+	}
+	std::string Token::get_str() const
+	{
+		return this->str;
 	}
 } // lex

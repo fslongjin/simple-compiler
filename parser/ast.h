@@ -12,8 +12,8 @@
 namespace lex
 {
 
-	// 表达式AST的基类
-	// 这是所有表达式结点的基类
+// 表达式AST的基类
+// 这是所有表达式结点的基类
 	class ExprAST
 	{
 	 public:
@@ -22,7 +22,7 @@ namespace lex
 		}
 	};
 
-	// 数字表达式的抽象语法树结构
+// 数字表达式的抽象语法树结构
 	class NumberExprAST : public ExprAST
 	{
 	 private:
@@ -34,7 +34,7 @@ namespace lex
 		}
 	};
 
-	// 表示一个变量的表达式类
+// 表示一个变量的表达式类
 	class VariableExprAST : public ExprAST
 	{
 	 private:
@@ -46,7 +46,7 @@ namespace lex
 		}
 	};
 
-	// 二元运算符的ast结点
+// 二元运算符的ast结点
 	class BinaryExprAST : public ExprAST
 	{
 	 private:
@@ -67,7 +67,7 @@ namespace lex
 		}
 	};
 
-	// 函数调用的抽象语法树结点
+// 函数调用的抽象语法树结点
 	class CallExprAST : public ExprAST
 	{
 	 private:
@@ -87,7 +87,7 @@ namespace lex
 		}
 	};
 
-	// 函数原型的AST
+// 函数原型的AST
 	class PrototypeAST
 	{
 	 private:
@@ -106,7 +106,7 @@ namespace lex
 
 	};
 
-	// 函数实现的AST，表示定义函数本体
+// 函数实现的AST，表示定义函数本体
 	class FunctionAST
 	{
 	 private:
