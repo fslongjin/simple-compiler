@@ -64,7 +64,7 @@ namespace parser
 	}
 	std::unique_ptr<lex::ExprAST> Parser::parse_identifier_expr()
 	{
-		std::string identifier = this->current_token.get_str();
+		std::string identifier = this->lexer->get_identifier();
 
 		// 消费掉当前表达式
 		get_next_token();
@@ -122,6 +122,76 @@ namespace parser
 		case '(':
 			return parse_paren_expr();
 		}
+	}
+	/**
+	 * 解析函数原型
+	 * @return 函数原型的AST
+	 */
+	std::unique_ptr<lex::PrototypeAST> Parser::parse_prototype()
+	{
+		if (current_token.get_token() != lex::tok_identifier)
+			return log_error_prototype("Expected function name in prototype.");
+		// 获取函数名
+		std::string func_name = this->lexer->get_identifier();
+		get_next_token();
+
+		if (current_token.get_token() != '(')
+			return log_error_prototype("Expected '(' in prototype.");
+
+		// 读取参数名
+		std::vector<std::string> arg_names;
+		while (get_next_token().get_token() == lex::tok_identifier)
+			arg_names.emplace_back(this->lexer->get_identifier());
+		if (current_token.get_token() != ')')
+			return log_error_prototype("Expected ')' in prototype.");
+
+		// 成功解析函数原型
+		get_next_token();    // 消费掉')'
+		return std::make_unique<lex::PrototypeAST>(func_name, std::move(arg_names));
+	}
+
+	/**
+	 * 解析函数定义
+	 * 函数定义其实就是一个原型+表达式的形式
+	 * @return 函数定义的AST
+	 */
+	std::unique_ptr<lex::FunctionAST> Parser::parse_definition()
+	{
+		get_next_token();    // 消费掉 'def' 关键字
+		auto proto = parse_prototype();
+		if (!proto) return nullptr;
+
+		// 构建函数定义的AST（原型+表达式）拼接而成
+		if (auto expr = parse_expression())
+			return std::make_unique<lex::FunctionAST>(std::move(proto), std::move(expr));
+		return nullptr;
+	}
+
+	/**
+	 * 解析函数的extern声明
+	 * @return extern声明的函数的AST
+	 */
+	std::unique_ptr<lex::PrototypeAST> Parser::parse_extern()
+	{
+		get_next_token();    // 消费掉‘extern’关键字
+		return parse_prototype();
+	}
+
+	/**
+	 * 解析用户定义的任何顶级表达式
+	 * @return 顶级表达式的匿名函数AST
+	 */
+	std::unique_ptr<lex::FunctionAST> Parser::parse_top_level_expr()
+	{
+		// 解析顶级表达式
+		if (auto expr = parse_expression())
+		{
+			// 为顶级表达式构建一个匿名的函数原型
+			auto prototype = std::make_unique<lex::PrototypeAST>("", std::vector<std::string>());
+			// 构建AST
+			return std::make_unique<lex::FunctionAST>(std::move(prototype), std::move(expr));
+		}
+		return nullptr;
 	}
 
 } // parser
