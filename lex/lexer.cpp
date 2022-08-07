@@ -10,7 +10,6 @@ namespace lex
 	Token Lexer::get_token()
 	{
 		int last_char = getchar();
-		std::string identifier_str;
 		// 跳过空格
 		while (std::isspace(last_char))
 			last_char = getchar();
@@ -18,14 +17,14 @@ namespace lex
 		// 第一个字符为字母
 		if (std::isalpha(last_char))
 		{
-			identifier_str = std::to_string(last_char);
+			this->identifier = std::to_string(last_char);
 			// 读取整个单词
 			while (std::isalnum((last_char = getchar())))
-				identifier_str += std::to_string(last_char);
+				this->identifier += std::to_string(last_char);
 
-			if (identifier_str == "def")
+			if (this->identifier == "def")
 				return Token(tok_def, 0);
-			if (identifier_str == "extern")
+			if (this->identifier == "extern")
 				return Token(tok_extern, 0);
 
 			return Token(tok_identifier, 0);
@@ -63,6 +62,10 @@ namespace lex
 
 		// 其他情况的话，不符合我们的解析条件，直接返回
 		return Token(last_char, 0);
+	}
+	std::string Lexer::get_identifier() const
+	{
+		return this->identifier;
 	}
 	bool Token::operator==(const Token& p) const
 	{

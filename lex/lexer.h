@@ -77,6 +77,7 @@ namespace lex
 		explicit Lexer() = default;
 		// 获取一个token
 		Token get_token();
+		std::string get_identifier()const;
 	};
 
 } // lex
